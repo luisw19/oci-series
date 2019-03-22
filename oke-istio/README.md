@@ -4,7 +4,7 @@
 > Note that the following Istio installation is based on [Helm](https://istio.io/docs/setup/kubernetes/install/helm/)
 > using Mac.
 
-> Also if not already, [Check this link provision a Kubernetes Cluster in OCI ready for Istio](https://istio.io/docs/setup/kubernetes/prepare/platform-setup/oci/).
+> Also if not already, [Check this link provision new Kubernetes Cluster in OCI ready for Istio](https://github.com/luisw19/oci-series/tree/master/oke-install).
 
 > This installation has been tested with [Istio version 1.1](https://istio.io/about/notes/1.1/).
 
@@ -76,7 +76,7 @@ kubectl -n kube-system get clusterrolebinding tiller
 ```
 
 > If any of the responses contains **Error from server (NotFound)** it means the service account and cluster role
-> has to be applied. This can be done by running: `kubectl apply -f install/kubernetes/helm/helm-service-account.yaml`
+> has to be applied. This can be done by running: `kubectl apply -f $ISTIO_HOME/install/kubernetes/helm/helm-service-account.yaml`
 
 - Ensure **Helm** is installed on the client. In Mac this can be easily done with brew
 
@@ -84,11 +84,23 @@ kubectl -n kube-system get clusterrolebinding tiller
 brew install kubernetes-helm
 ```
 
-- Then initialised and ensure version corresponds to the server:
+- Then **initialised** amd **upgrade** and ensure version corresponds to the server:
 
 ```bash
-helm init
 helm init --upgrade
+```
+
+Verity that both client and server versions are consistent by running:
+
+```bash
+helm version
+```
+
+Response should be similar to:
+
+```bash
+Client: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7f8c37a5d39fbb4", GitTreeState:"clean"}
+Server: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7f8c37a5d39fbb4", GitTreeState:"clean"}
 ```
 
 5) Create the **istio-system** namespaces and create secrets for **Grafana** and **Kiali**
