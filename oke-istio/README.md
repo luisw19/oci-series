@@ -505,8 +505,8 @@ https://httpbin.adomain.com:$SECURE_INGRESS_PORT/httpbin/status/418
 > It may take a couple of minutes for the certificates to load. So you may
 > need to retry a few times.
 
-> Also notice the curl parameters -**HHost** and **--resolve**. These were added
-> to resolve the domain **httpbin.adomain.com** against the ingress IP and Port.
+> Also notice the curl parameters **--insecure**, **-HHost** and **--resolve**. These were added
+> to resolve the domain **httpbin.adomain.com** against the ingress IP and Port using the self-signed cert.
 > Alternatively add an entry to the /etc/hosts file to match
 > the Ingress IP to the domain used.
 
