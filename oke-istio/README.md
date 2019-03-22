@@ -375,7 +375,7 @@ curl -I http://$INGRESS_HOST:$INGRESS_PORT/httpbin/delay/5
 
 In all cases the response should be a **HTTP/1.1 200 OK**
 
-11) [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on Secret [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
+11) [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
 
 > Note that Istio provides 2 approaches to add TLS support in the Ingress Gateways.
 > The first one is based on a [File Mount](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/mount/)
