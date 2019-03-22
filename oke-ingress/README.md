@@ -199,7 +199,7 @@ kubectl delete namespace httpbin-nginx
 First find the ingress controller pod:
 
 ```bash
-kubectl get po -n ingress-nginx
+kubectl get pod -n ingress-nginx
 ```
 
 Then use the pod to *kubectl exec* into it:
