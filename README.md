@@ -6,8 +6,8 @@ of OCI.
 
 Below the list of recipes available so far:
 
-## [Create an Oracle Kubernetes Cluster using the OCI CLI](https://github.com/luisw19/oci-series/tree/master/oke-install)
-Steps to provision an OKE cluster in 3 simple steps.
+## [Quick install of Oracle Kubernetes Engine](https://github.com/luisw19/oci-series/tree/master/oke-install)
+Steps to provision an OKE cluster based on the **quick create** option.
 
 ## [Nginx Ingress Controller Installation](https://github.com/luisw19/oci-series/tree/master/oke-ingress)
 Shows how to configure an [Nginx Ingress Controller]((https://kubernetes.github.io/ingress-nginx/)) in OKE. The recipe also describes how to configure an Ingress service to support TLS using a fully qualify domain name (FQDN) with self-signed certificate.
