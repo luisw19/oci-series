@@ -545,13 +545,9 @@ Responses should be a **HTTP/2 200**
 for ((i=1;i<=10;i++)); do curl -I --insecure -HHost:httpbin.adomain.com --resolve httpbin.adomain.com:$SECURE_INGRESS_PORT:$INGRESS_HOST https://httpbin.adomain.com:$SECURE_INGRESS_PORT/httpbin/headers; done
 ```
 
-- Delete the sample if desired by running the following commands:
+- To delete the entire sample run:
 
 ```bash
-kubectl delete -n httpbin-istio service httpbin
-kubectl delete -n httpbin-istio deployment httpbin
-kubectl -n httpbin-istio delete gateway httpbin-gateway
-kubectl -n httpbin-istio delete virtualservice httpbin-vts
 kubectl -n istio-system delete secret httpbin-istio-secret
 kubectl delete namespace httpbin-istio
 ```

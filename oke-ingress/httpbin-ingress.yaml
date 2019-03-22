@@ -11,7 +11,7 @@ spec:
   tls:
   - hosts:
     - httpbin.sample
-    secretName: tls-secret
+    secretName: httpbin-secret
   rules:
   - host: httpbin.sample
     http:

@@ -47,7 +47,7 @@ run the following command to apply a *Load Balancer* service.
 kubectl apply -f cloud-generic.yaml
 ```
 
-5) Verify that all services are running
+- Verify that all services are running
 
 ```bash
 kubectl get svc -n ingress-nginx
@@ -58,10 +58,29 @@ kubectl get svc -n ingress-nginx
 > basically creating an OCI load balancer also visible from the
 > OCI console itself under *Networking > Load Balancers*.
 
-6) Using the [openssl](https://www.openssl.org/) utility [generate a TLS certificate](https://www.linode.com/docs/security/ssl/create-a-self-signed-tls-certificate/) as following:
+- To delete the Ingress Controller, all configurations and start over you can run:
 
 ```bash
-openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out tls.crt -keyout tls.key
+kubectl delete -n ingress-nginx  configmap nginx-configuration
+kubectl delete -n ingress-nginx  configmap tcp-services
+kubectl delete -n ingress-nginx  configmap udp-services
+kubectl delete -n ingress-nginx serviceaccount nginx-ingress-serviceaccount
+kubectl delete -n default clusterrole nginx-ingress-clusterrole
+kubectl delete -n ingress-nginx role nginx-ingress-role
+kubectl delete -n ingress-nginx rolebinding nginx-ingress-role-nisa-binding
+kubectl delete -n default clusterrolebinding nginx-ingress-clusterrole-nisa-binding
+kubectl delete -n ingress-nginx deployment nginx-ingress-controller
+kubectl delete -n ingress-nginx service nginx-ingress-controller
+```
+
+5) Now that the ingress is installed we can create deploy a sample and then create an ingress.
+
+> As in the sample we also implement TLS security therefore the first step is to crate the certificates.
+
+- Using the [openssl](https://www.openssl.org/) utility [generate a TLS certificate](https://www.linode.com/docs/security/ssl/create-a-self-signed-tls-certificate/) as following:
+
+```bash
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out httpbin.sample.crt -keyout httpbin.sample.key
 ```
 
 When prompted enter further details as desired, for example:
@@ -76,9 +95,9 @@ Common Name (eg, fully qualified host name) []:httpbin.sample
 Email Address []:me@httpbin.sample
 ```
 
-Once completed this should generate *tls.key* and *tls.crt*.
+Once completed this should generate *httpbin.sample.key* and *httpbin.sample.crt*.
 
-7) The secret must be created in the target namespace where an ingress service will be created. If default, then the following steps are not required. If something other than default then ensure that the
+- The secret must be created in the target namespace where an ingress service will be created. If default, then the following steps are not required. If something other than default then ensure that the
 
 > note that in the below example we're creating a target namespace called *orders-ms*
 
@@ -91,10 +110,10 @@ kubectl config use-context httpbin-nginx
 Then run create the secret on the target name space:
 
 ```bash
-kubectl create secret tls tls-secret --key tls.key --cert tls.crt
+kubectl create secret tls httpbin-secret --key httpbin.sample.key --cert httpbin.sample.crt
 ```
 
-8) Deploy a sample service:
+- Deploy a sample service:
 
 First get the latest manifest file:
 
@@ -114,13 +133,13 @@ Verify that pods were created:
 kubectl get pods
 ```
 
-9) create the Ingress as following:
+- create the Ingress as following:
 
 ```bash
 kubectl create -f httpbin-ingress.yaml
 ```
 
-10) Try it out as following:
+- Try it out as following:
 
 ```bash
 export INGRESS_HOST=$(kubectl -n ingress-nginx get service ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -169,7 +188,13 @@ curl -I --insecure \
 https://httpbin.sample:$SECURE_INGRESS_PORT/headers
 ```
 
-11) Following some tips to troubleshoot the configuration by inspecting the Nginx config:
+- To delete the sample run:
+
+```bash
+kubectl delete namespace httpbin-nginx
+```
+
+#### Following a tip to troubleshoot the configuration by inspecting the Nginx config:
 
 First find the ingress controller pod:
 
@@ -181,29 +206,4 @@ Then use the pod to *kubectl exec* into it:
 
 ```bash
 kubectl -n ingress-nginx exec -it nginx-ingress-controller-56c5c48c4d-fstg5 -- cat /etc/nginx/nginx.conf > nginx.output
-```
-
-12) In case you need to start over, below commands to delete the objects created
-
-- To delete the HTTPBIN sample:
-
-```bash
-kubectl delete -n ingress-nginx service nginx-ingress-controller
-kubectl delete -n ingress-nginx deployment httpbin
-kubectl delete -n ingress-nginx service httpbin
-```
-
-- Delete cluster role bindings, service accounts and controller.
-
-```bash
-kubectl delete -n ingress-nginx  configmap nginx-configuration
-kubectl delete -n ingress-nginx  configmap tcp-services
-kubectl delete -n ingress-nginx  configmap udp-services
-kubectl delete -n ingress-nginx serviceaccount nginx-ingress-serviceaccount
-kubectl delete -n default clusterrole nginx-ingress-clusterrole
-kubectl delete -n ingress-nginx role nginx-ingress-role
-kubectl delete -n ingress-nginx rolebinding nginx-ingress-role-nisa-binding
-kubectl delete -n default clusterrolebinding nginx-ingress-clusterrole-nisa-binding
-kubectl delete -n ingress-nginx deployment nginx-ingress-controller
-kubectl delete -n ingress-nginx service nginx-ingress-controller
 ```
