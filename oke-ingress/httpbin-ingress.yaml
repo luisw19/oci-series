@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: httpbin-nginx
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/add-base-url: 'true'
+    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+  - hosts:
+    - httpbin.sample
+    secretName: tls-secret
+  rules:
+  - host: httpbin.sample
+    http:
+      paths:
+      - backend:
+          serviceName: httpbin
+          servicePort: 8000
+
+#Comment and uncomment below to remove domain validation
+# spec:
+#   tls:
+#   - secretName: tls-secret
+#   rules:
+#   - http:
+#       paths:
+#       - backend:
+#           serviceName: httpbin
+#           servicePort: 8000
