@@ -182,7 +182,7 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 
 - To install with Istio with the
 [Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/),
-[Jeager](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/),
+[Jaeger](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/),
 [Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/),
 [Kiali](https://istio.io/docs/tasks/telemetry/kiali/) add-ons install as following:
 
@@ -199,8 +199,10 @@ helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace 
 --set tracing.enabled=true \
 --set tracing.jaeger.ingress.enabled=true \
 --set kiali.enabled=true \
---set kiali.dashboard.jaegerURL='http://jaeger-query:16686' \
---set kiali.dashboard.grafanaURL='http://grafana:3000'
+--set kiali.dashboard.jaegerURL='http://localhost:16686' \
+--set kiali.dashboard.grafanaURL='http://localhost:3000'
+# --set kiali.dashboard.jaegerURL='http://jaeger-query:16686' \
+# --set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
 ```
 
 > [Click here](https://istio.io/docs/reference/config/installation-options/) for details of more options available.
@@ -212,8 +214,8 @@ it can be done as following:
 
 ```bash
 helm template $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace istio-system \
---set pilot.traceSampling=100.0 \
---set pilot.resources.requests.cpu=1800m \
+--set kiali.dashboard.jaegerURL='http://localhost:16686' \
+--set kiali.dashboard.grafanaURL='http://localhost:3000' \
 | kubectl apply -f -
 ```
 

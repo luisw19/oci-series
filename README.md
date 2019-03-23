@@ -17,6 +17,6 @@ Comprehensive and complete guide on configuring [Istio version 1.1.0](https://gi
 - TLS/HTTPS configuration in an Istio Gateway using a fully qualify domain name (FQDN) with a self-signed certificate and based on  [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/)
 - The following add-ons: [Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/) and
 [Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/) for performance monitoring,
-[Jeager](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for tracing, and
+[Jaeger](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for tracing, and
 [Kiali](https://istio.io/docs/tasks/telemetry/kiali/) for service mesh observability.
 - Optimisation of telemetry options and compute resources.
