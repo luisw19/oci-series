@@ -1,5 +1,6 @@
 
-# [Istio](https://istio.io/docs/concepts/what-is-istio/) installation in [Oracle Container Engine for Kubernetes](https://cloud.oracle.com/containers/kubernetes-engine)
+# Istio installation in Oracle Container Engine for Kubernetes
+This recipe details how to install [Istio](https://istio.io/docs/concepts/what-is-istio/) in [OKE](https://cloud.oracle.com/containers/kubernetes-engine) with [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Jaeger](https://www.jaegertracing.io/) and [Kiali](https://www.kiali.io/). The recipe also shows how to enable TLS security using [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/).
 
 > Note that the following Istio installation is based on [Helm](https://istio.io/docs/setup/kubernetes/install/helm/)
 > using Mac.
@@ -180,11 +181,10 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 7) Install Istio with **Helm** the desired confirmation profile.
 
 - To install with Istio with the
-[Prometheus](https://istio.io/docs/tasks/telemetry/querying-metrics/),
-[Jeager](https://istio.io/docs/tasks/telemetry/distributed-tracing/),
+[Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/),
+[Jeager](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/),
 [Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/),
-[Kiali](https://istio.io/docs/tasks/telemetry/kiali/) and
-[Service Graph](https://istio.io/docs/tasks/telemetry/servicegraph/) add-ons install as following:
+[Kiali](https://istio.io/docs/tasks/telemetry/kiali/) add-ons install as following:
 
 ```bash
 helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace istio-system \
@@ -196,15 +196,16 @@ helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace 
 --set telemetry-gateway.prometheusEnabled=true \
 --set grafana.enabled=true \
 --set grafana.security.enabled=true \
---set servicegraph.enabled=true \
 --set tracing.enabled=true \
 --set tracing.jaeger.ingress.enabled=true \
 --set kiali.enabled=true \
---set kiali.dashboard.jaegerURL='http://tracing.local:80' \
---set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
+--set kiali.dashboard.jaegerURL='http://jaeger-query:16686' \
+--set kiali.dashboard.grafanaURL='http://grafana:3000'
 ```
 
 > [Click here](https://istio.io/docs/reference/config/installation-options/) for details of more options available.
+
+> Note that Istio 1.1.10 also comes with an add-on for [LightStep [𝑥]PM](https://lightstep.com/). The configuration of this tool wasn't covered in this recipe as it goes beyond the main installing Istio installation also requiring for example the creation of a trial account in the Lightstep website, configuration of Satellite containers and others. [Click here for more info how how to set it up](https://istio.io/docs/tasks/telemetry/distributed-tracing/lightstep/).
 
 <!-- - If there is a need to add additional properties (e.g. additional **pilot tracing sampling and CPU**)
 it can be done as following:
@@ -554,21 +555,15 @@ kubectl delete namespace httpbin-istio
 
 12) Access the monitoring services via **port-forwarding** as following:
 
-- For **Jaeger** run command:
-
-```bash
-kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686 &
-```
-
-Then access the following link in browser: http://localhost:16686
-
 - For **Prometheus** run command:
 
 ```bash
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') 9090:9090 &
 ```
 
-Then access the following link in browser: http://localhost:9090
+Then access the following link in browser: http://localhost:9090/graph
+
+> Check [this page](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/) for more details.
 
 - For **Grafana** run command:
 
@@ -578,6 +573,18 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=gr
 
 Then access the following link in browser: http://localhost:3000
 
+> Check [this page](https://istio.io/docs/tasks/telemetry/metrics/using-istio-dashboard/) for more details.
+
+- For **Jaeger** run command:
+
+```bash
+kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686 &
+```
+
+Then access the following link in browser: http://localhost:16686
+
+> Check [this page](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for more details.
+
 - For **Kiali** run command:
 
 ```bash
@@ -586,13 +593,13 @@ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=ki
 
 Then access the following link in browser: http://localhost:20001/kiali/
 
-- For **Service Graph** run command:
+> Check [this page](https://istio.io/docs/tasks/telemetry/kiali/) for more details.
+
+- For **LightStep [𝑥]PM** run command:
 
 ```bash
-kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=servicegraph -o jsonpath='{.items[0].metadata.name}') 8088:8088 &
-```
 
-Then access the following link in browser: http://localhost:8088/force/forcegraph.html
+```
 
 - To **kill** all `kubectl port-forward` processes run:
 

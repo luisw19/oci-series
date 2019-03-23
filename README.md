@@ -15,9 +15,8 @@ Shows how to configure an [Nginx Ingress Controller]((https://kubernetes.github.
 ## [Complete Istio installation in OKE](https://luisw19.github.io/oci-series/oke-istio/)
 Comprehensive and complete guide on configuring [Istio version 1.1.0](https://github.com/istio/istio/releases/tag/1.1.0) in OKE. The recipe describes to configure the Istio to support:
 - TLS/HTTPS configuration in an Istio Gateway using a fully qualify domain name (FQDN) with a self-signed certificate and based on  [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/)
-- The following add-ons: [Prometheus](https://istio.io/docs/tasks/telemetry/querying-metrics/),
-[Jeager](https://istio.io/docs/tasks/telemetry/distributed-tracing/),
-[Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/),
-[Kiali](https://istio.io/docs/tasks/telemetry/kiali/) and
-[Service Graph](https://istio.io/docs/tasks/telemetry/servicegraph/).
+- The following add-ons: [Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/) and
+[Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/) for performance monitoring,
+[Jeager](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for tracing, and
+[Kiali](https://istio.io/docs/tasks/telemetry/kiali/) for service mesh observability.
 - Optimisation of telemetry options and compute resources.
