@@ -104,13 +104,17 @@ Client: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7
 Server: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7f8c37a5d39fbb4", GitTreeState:"clean"}
 ```
 
-5) Create the **istio-system** namespaces and create secrets for **Grafana** and **Kiali**
+5) Create the **istio-system** namespaces
 
 ```bash
 kubectl create namespace istio-system
 ```
 
-- Create the **base64** encoded **username** and **password**
+6) Create a secret for **Kiali**
+
+> This is required as Kiali expects the secret to be present.
+
+- Create a **base64** encoded **username** and **password**
 
 ```bash
 $ echo -n 'user' | base64
@@ -119,7 +123,7 @@ $ echo -n 'sample' | base64
 c2FtcGxl
  ```
 
- - Create a secret for **kiali**:
+ - Then use it to create a secret:
 
 ```bash
 cat <<EOF | kubectl apply -f -
@@ -137,32 +141,7 @@ data:
 EOF
 ```
 
-- Create a secret for **Grafana**
-
-```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: grafana
-  namespace: istio-system
-  labels:
-    app: grafana
-type: Opaque
-data:
-  username: YWRtaW4=
-  passphrase: V2VsY29tZTE=
-EOF
-```
-
-- To delete the **secrets** previously created:
-
-```bash
-kubectl delete secret grafana -n istio-system
-kubectl delete secret kiali -n istio-system
-```
-
-6) Install the **istio-init** Helm chart to bootstrap all the Istio’s [Custom Resource Definitions (CRDs)][https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions]
+7) Install the **istio-init** Helm chart to bootstrap all the Istio’s [Custom Resource Definitions (CRDs)][https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions]
 
 ```bash
 helm install $ISTIO_HOME/install/kubernetes/helm/istio-init --name istio-init --namespace istio-system \
@@ -178,12 +157,12 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 > Note that it may take a few seconds to complete so you may need to
 > run the command multiple times.
 
-7) Install Istio with **Helm** the desired confirmation profile.
+8) Install Istio with **Helm** the desired confirmation profile.
 
 - To install with Istio with the
 [Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/),
 [Jaeger](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/),
-[Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/),
+[Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/) and
 [Kiali](https://istio.io/docs/tasks/telemetry/kiali/) add-ons install as following:
 
 ```bash
@@ -195,32 +174,16 @@ helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace 
 --set telemetry-gateway.grafanaEnabled=true \
 --set telemetry-gateway.prometheusEnabled=true \
 --set grafana.enabled=true \
---set grafana.security.enabled=true \
 --set tracing.enabled=true \
 --set tracing.jaeger.ingress.enabled=true \
 --set kiali.enabled=true \
 --set kiali.dashboard.jaegerURL='http://localhost:16686' \
---set kiali.dashboard.grafanaURL='http://localhost:3000'
-# --set kiali.dashboard.jaegerURL='http://jaeger-query:16686' \
-# --set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
+--set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
 ```
 
 > [Click here](https://istio.io/docs/reference/config/installation-options/) for details of more options available.
 
 > Note that Istio 1.1.10 also comes with an add-on for [LightStep [𝑥]PM](https://lightstep.com/). The configuration of this tool wasn't covered in this recipe as it goes beyond the main installing Istio installation also requiring for example the creation of a trial account in the Lightstep website, configuration of Satellite containers and others. [Click here for more info how how to set it up](https://istio.io/docs/tasks/telemetry/distributed-tracing/lightstep/).
-
-<!-- - If there is a need to add additional properties (e.g. additional **pilot tracing sampling and CPU**)
-it can be done as following:
-
-```bash
-helm template $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace istio-system \
---set kiali.dashboard.jaegerURL='http://localhost:16686' \
---set kiali.dashboard.grafanaURL='http://localhost:3000' \
-| kubectl apply -f -
-```
-
-The above didn't work and ended up having to re-install Istio
--->
 
 - Verity all that **pods** are **running** run:
 
@@ -262,7 +225,7 @@ And finally the namespace:
 kubectl delete namespace istio-system
 ```
 
-8) For Istio [automatic injection](https://istio.io/docs/setup/kubernetes/sidecar-injection/#automatic-sidecar-injection) of **Envoy side-cars** to work the label **istio-injection=enabled** has to be set to the **target namespaces** as following:
+9) For Istio [automatic injection](https://istio.io/docs/setup/kubernetes/sidecar-injection/#automatic-sidecar-injection) of **Envoy side-cars** to work the label **istio-injection=enabled** has to be set to the **target namespaces** as following:
 
 - Create a **namespaces**
 
@@ -290,7 +253,7 @@ NAME            STATUS   AGE    ISTIO-INJECTION
 httpbin-istio   Active   25s   enabled
 ```
 
-9) From the same **namespace** where **istio-injection** was enabled, deploy the **Pods** and verify that the **Istio side-cars** are being attached correctly:
+10) From the same **namespace** where **istio-injection** was enabled, deploy the **Pods** and verify that the **Istio side-cars** are being attached correctly:
 
 - Based on [this Istio sample](https://istio.io/docs/tasks/traffic-management/ingress/), deploy the [HTTPBIN](https://httpbin.org) **manifest** as following:
 
@@ -319,7 +282,7 @@ Annotations:       sidecar.istio.io/status:
                   {"version":"887285bb7fa76191bf7f637f283183f0ba057323b078d44c3db45978346cbc1a","initContainers":["istio-init"],"containers":["istio-proxy"]...
 ```
 
-10) Create the Istio [Ingress Gateway](https://istio.io/docs/tasks/traffic-management/ingress/)
+11) Create the Istio [Ingress Gateway](https://istio.io/docs/tasks/traffic-management/ingress/)
 and [Virtual Service](https://istio.io/docs/concepts/traffic-management/#virtual-services)
 
 - First determine the **Istio Ingress LB external IP** and **ports** by running the following commands:
@@ -390,7 +353,7 @@ curl -I http://$INGRESS_HOST:$INGRESS_PORT/httpbin/delay/5
 
 In all cases the response should be a **HTTP/1.1 200 OK**
 
-11) [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
+12) [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
 
 > Note that Istio provides 2 approaches to add TLS support in the Ingress Gateways.
 > The first one is based on a [File Mount](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/mount/)
@@ -559,7 +522,7 @@ kubectl -n istio-system delete secret httpbin-istio-secret
 kubectl delete namespace httpbin-istio
 ```
 
-12) Access the monitoring services via **port-forwarding** as following:
+13) Access the monitoring services via **port-forwarding** as following:
 
 - For **Prometheus** run command:
 
@@ -571,13 +534,14 @@ Then access the following link in browser: http://localhost:9090/graph
 
 > Check [this page](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/) for more details.
 
+
 - For **Grafana** run command:
 
 ```bash
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=grafana -o jsonpath='{.items[0].metadata.name}') 3000:3000 &
 ```
 
-Then access the following link in browser: http://localhost:3000
+Then accessing the following link in the browser: http://localhost:3000
 
 > Check [this page](https://istio.io/docs/tasks/telemetry/metrics/using-istio-dashboard/) for more details.
 
@@ -587,7 +551,7 @@ Then access the following link in browser: http://localhost:3000
 kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686 &
 ```
 
-Then access the following link in browser: http://localhost:16686
+Then accessing the following link in the browser: http://localhost:16686
 
 > Check [this page](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for more details.
 
@@ -597,15 +561,13 @@ Then access the following link in browser: http://localhost:16686
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=kiali -o jsonpath='{.items[0].metadata.name}') 20001:20001 &
 ```
 
-Then access the following link in browser: http://localhost:20001/kiali/
+> Note that Kiali will try to access **Jaeger** in **http://localhost:16686** so ensure port-forwarding is enable for it.
+
+Then accessing the following link in the browser: http://localhost:20001/kiali/
 
 > Check [this page](https://istio.io/docs/tasks/telemetry/kiali/) for more details.
 
-- For **LightStep [𝑥]PM** run command:
-
-```bash
-
-```
+- For other monitoring options [check section 12 of think recipe](https://luisw19.github.io/oci-series/oke-istio/)
 
 - To **kill** all `kubectl port-forward` processes run:
 
@@ -613,7 +575,7 @@ Then access the following link in browser: http://localhost:20001/kiali/
 killall kubectl
 ```
 
-# Other useful tips:
+14) Other useful tips:
 
 - To read the **logs** of **Ingress Gateway** execute:
 
