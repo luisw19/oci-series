@@ -549,6 +549,10 @@ for ((i=1;i<=10;i++)); do curl -I --insecure -HHost:httpbin.adomain.com --resolv
 - To delete the entire sample run:
 
 ```bash
+kubectl -n httpbin-istio delete service httpbin
+kubectl -n httpbin-istio delete deployment httpbin
+kubectl -n httpbin-istio delete gateway httpbin-gateway
+kubectl -n httpbin-istio delete virtualservice httpbin-vts
 kubectl -n istio-system delete secret httpbin-istio-secret
 kubectl delete namespace httpbin-istio
 ```
