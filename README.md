@@ -6,7 +6,7 @@ of OCI.
 
 Below the list of recipes available so far:
 
-## [Quick install of Oracle Kubernetes Engine](./oci-series/oke-install/)
+## [Quick install of Oracle Kubernetes Engine](https://luisw19.github.io/oci-series/oke-install/)
 Steps to provision an OKE cluster based on the **quick create** option. It also includes some useful tips and tricks.
 
 ## [Nginx Ingress Controller Installation](https://luisw19.github.io/oci-series/oke-ingress/)
