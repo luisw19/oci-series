@@ -5,8 +5,7 @@ This recipe details how to install [Istio](https://istio.io/docs/concepts/what-i
 > Note that the following Istio installation is based on [Helm](https://istio.io/docs/setup/kubernetes/install/helm/)
 > using Mac.
 
-> [Check this link](https://github.com/luisw19/oci-series/tree/master/oke-install) to provision a new Kubernetes Cluster in OCI
-> if an instance is not already available.
+> Also if not already, [Check this link provision a new Kubernetes Cluster in OCI](https://github.com/luisw19/oci-series/tree/master/oke-install).
 
 > This installation has been tested with [Istio version 1.1](https://istio.io/about/notes/1.1/).
 
