@@ -1,7 +1,7 @@
 # Oracle Kubernetes [Nginx Ingress](https://kubernetes.github.io/ingress-nginx/) Installation
 The steps described in this page are based on [this OCI page](https://docs.cloud.oracle.com/iaas/Content/ContEng/Tasks/contengsettingupingresscontroller.htm)
 
-1) Switch to default context.
+1. Switch to default context.
 
 First determine the name of the default context, run:
 
@@ -15,7 +15,7 @@ Then take note of the *name*, *user* and *cluster* values under section *"- cont
 kubectl config use-context context-c3wczrxmftd
 ```
 
-2) Grant the *Kubernetes RBAC cluster-admin clusterrole* to a OCI user based on
+2. Grant the *Kubernetes RBAC cluster-admin clusterrole* to a OCI user based on
 the user's *Oracle Cloud Identifier (OCID)*.
 
 > To obtain the OICD open the OCI Console and from there
@@ -26,7 +26,7 @@ the user's *Oracle Cloud Identifier (OCID)*.
 kubectl create clusterrolebinding sttc_admin --clusterrole=cluster-admin --user=ocid1.user.oc1..aaaaaaaazhciwyt5kooopvnovupyao7v7a73imsvxoqrb2omojbcvcxpgvrq
 ```
 
-3) Create the *NGINX ingress controller* along with the Kubernetes RBAC roles and bindings:
+3. Create the *NGINX ingress controller* along with the Kubernetes RBAC roles and bindings:
 
 First get the latest manifest file:
 
@@ -40,7 +40,7 @@ Then create the RBAC roles and Nginx ingress controller by running:
 kubectl create -f mandatory.yaml
 ```
 
-4) Now that the *NGINX ingress controller* has been created,
+4. Now that the *NGINX ingress controller* has been created,
 run the following command to apply a *Load Balancer* service.
 
 ```bash
@@ -73,7 +73,7 @@ kubectl delete -n ingress-nginx deployment nginx-ingress-controller
 kubectl delete -n ingress-nginx service nginx-ingress-controller
 ```
 
-5) Now that the ingress is installed we can create deploy a sample and then create an ingress.
+5. Now that the ingress is installed we can create deploy a sample and then create an ingress.
 
 > As in the sample we also implement TLS security therefore the first step is to crate the certificates.
 

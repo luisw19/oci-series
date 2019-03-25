@@ -10,7 +10,7 @@ This recipe details how to install [Istio](https://istio.io/docs/concepts/what-i
 
 > This installation has been tested with [Istio version 1.1](https://istio.io/about/notes/1.1/).
 
-1) Grant the *Kubernetes RBAC cluster-admin clusterrole* to a OCI user based on
+1. Grant the *Kubernetes RBAC cluster-admin clusterrole* to a OCI user based on
 the user's *Oracle Cloud Identifier (OCID)*.
 
 > To obtain the OICD open the OCI Console and from there
@@ -21,7 +21,7 @@ the user's *Oracle Cloud Identifier (OCID)*.
 kubectl create clusterrolebinding sttc_admin --clusterrole=cluster-admin --user=ocid1.user.oc1..aaaaaaaazhciwyt5kooopvnovupyao7v7a73imsvxoqrb2omojbcvcxpgvrq
 ```
 
-2) Download Istio’s [latest release](https://istio.io/docs/setup/kubernetes/download/)
+2. Download Istio’s [latest release](https://istio.io/docs/setup/kubernetes/download/)
 
 - First decide on which location you wish to download Istio then optionally create a folder for the download.
 
@@ -39,7 +39,7 @@ cd istio
 
 > This will download istio into the folder **./istio-1.1.0**
 
-3) Set **$ISTIO_HOME** and add the **istioctl** to the path in case required.
+3. Set **$ISTIO_HOME** and add the **istioctl** to the path in case required.
 
 - From the same location where Istio was downloaded, execute the following:
 
@@ -51,7 +51,7 @@ export PATH=$PWD/bin:$PATH
 
 > **istioctl** is used when manually injecting Envoy as a sidecar proxy.
 
-4) [Helm installation](https://helm.sh/) and [Tiller](https://helm.sh/docs/glossary/#tiller) installation:
+4. [Helm installation](https://helm.sh/) and [Tiller](https://helm.sh/docs/glossary/#tiller) installation:
 
 - Ensure **Tiller** is already installed on the server with the command:
 
@@ -105,13 +105,13 @@ Client: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7
 Server: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7f8c37a5d39fbb4", GitTreeState:"clean"}
 ```
 
-5) Create the **istio-system** namespaces
+5. Create the **istio-system** namespaces
 
 ```bash
 kubectl create namespace istio-system
 ```
 
-6) Create a secret for **Kiali**
+6. Create a secret for **Kiali**
 
 > This is required as Kiali expects the secret to be present.
 
@@ -142,7 +142,7 @@ data:
 EOF
 ```
 
-7) Install the **istio-init** Helm chart to bootstrap all the Istio’s [Custom Resource Definitions (CRDs)][https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions]
+7. Install the **istio-init** Helm chart to bootstrap all the Istio’s [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions)(CRDs)
 
 ```bash
 helm install $ISTIO_HOME/install/kubernetes/helm/istio-init --name istio-init --namespace istio-system \
@@ -158,7 +158,7 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 > Note that it may take a few seconds to complete so you may need to
 > run the command multiple times.
 
-8) Install Istio with **Helm** the desired confirmation profile.
+8. Install Istio with **Helm** the desired confirmation profile.
 
 - To install with Istio with the
 [Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/),
@@ -178,7 +178,7 @@ helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace 
 --set tracing.enabled=true \
 --set tracing.jaeger.ingress.enabled=true \
 --set kiali.enabled=true \
---set kiali.dashboard.jaegerURL='http://localhost:16686' \
+--set kiali.dashboard.jaegerURL='http://localhost:15.86' \
 --set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
 ```
 
@@ -226,7 +226,7 @@ And finally the namespace:
 kubectl delete namespace istio-system
 ```
 
-9) For Istio [automatic injection](https://istio.io/docs/setup/kubernetes/sidecar-injection/#automatic-sidecar-injection) of **Envoy side-cars** to work the label **istio-injection=enabled** has to be set to the **target namespaces** as following:
+9. For Istio [automatic injection](https://istio.io/docs/setup/kubernetes/sidecar-injection/#automatic-sidecar-injection) of **Envoy side-cars** to work the label **istio-injection=enabled** has to be set to the **target namespaces** as following:
 
 - Create a **namespaces**
 
@@ -254,7 +254,7 @@ NAME            STATUS   AGE    ISTIO-INJECTION
 httpbin-istio   Active   25s   enabled
 ```
 
-10) From the same **namespace** where **istio-injection** was enabled, deploy the **Pods** and verify that the **Istio side-cars** are being attached correctly:
+10. From the same **namespace** where **istio-injection** was enabled, deploy the **Pods** and verify that the **Istio side-cars** are being attached correctly:
 
 - Based on [this Istio sample](https://istio.io/docs/tasks/traffic-management/ingress/), deploy the [HTTPBIN](https://httpbin.org) **manifest** as following:
 
@@ -283,7 +283,7 @@ Annotations:       sidecar.istio.io/status:
                   {"version":"887285bb7fa76191bf7f637f283183f0ba057323b078d44c3db45978346cbc1a","initContainers":["istio-init"],"containers":["istio-proxy"]...
 ```
 
-11) Create the Istio [Ingress Gateway](https://istio.io/docs/tasks/traffic-management/ingress/)
+11. Create the Istio [Ingress Gateway](https://istio.io/docs/tasks/traffic-management/ingress/)
 and [Virtual Service](https://istio.io/docs/concepts/traffic-management/#virtual-services)
 
 - First determine the **Istio Ingress LB external IP** and **ports** by running the following commands:
@@ -354,7 +354,7 @@ curl -I http://$INGRESS_HOST:$INGRESS_PORT/httpbin/delay/5
 
 In all cases the response should be a **HTTP/1.1 200 OK**
 
-12) [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
+12. [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
 
 > Note that Istio provides 2 approaches to add TLS support in the Ingress Gateways.
 > The first one is based on a [File Mount](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/mount/)
@@ -523,7 +523,7 @@ kubectl -n istio-system delete secret httpbin-istio-secret
 kubectl delete namespace httpbin-istio
 ```
 
-13) Access the monitoring services via **port-forwarding** as following:
+13. Access the monitoring services via **port-forwarding** as following:
 
 - For **Prometheus** run command:
 
@@ -549,10 +549,10 @@ Then accessing the following link in the browser: http://localhost:3000
 - For **Jaeger** run command:
 
 ```bash
-kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686 &
+kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 15.86:15.86 &
 ```
 
-Then accessing the following link in the browser: http://localhost:16686
+Then accessing the following link in the browser: http://localhost:15.86
 
 > Check [this page](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for more details.
 
@@ -562,7 +562,7 @@ Then accessing the following link in the browser: http://localhost:16686
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=kiali -o jsonpath='{.items[0].metadata.name}') 20001:20001 &
 ```
 
-> Note that Kiali will try to access **Jaeger** in **http://localhost:16686** so ensure port-forwarding is enable for it.
+> Note that Kiali will try to access **Jaeger** in **http://localhost:15.86** so ensure port-forwarding is enable for it.
 
 Then accessing the following link in the browser: http://localhost:20001/kiali/
 
@@ -576,7 +576,7 @@ Then accessing the following link in the browser: http://localhost:20001/kiali/
 killall kubectl
 ```
 
-14) Other useful tips:
+14. Other useful tips:
 
 - To read the **logs** of **Ingress Gateway** execute:
 
@@ -590,7 +590,7 @@ kubectl -n istio-system logs $(kubectl -n istio-system get pods -listio=ingressg
 kubectl -n istio-system exec -it $(kubectl -n istio-system get pods -l istio=ingressgateway -o jsonpath='{.items[0].metadata.name}') bash
 ```
 
--  To configure **Istio metrics** to collect **telemetry** from the mesh (so it can can later be access with Prometheus) run the following command:
+-  To configure **Istio metrics** to collect **telemetry** from the mesh (so it can can later be accessed with Prometheus) run the following command:
 
 > This is important as its not enabled by default.
 
@@ -616,4 +616,4 @@ Then look for the **match** clause (e.g. /match) and then replace it with the de
 match: (context.protocol == "http" || context.protocol == "grpc") && match(request.useragent | "", "kube-probe*") == false
 ```
 
-> [This article](https://itnext.io/where-does-the-unknown-taffic-in-istio-come-from-4a9a7e4454c3) describes well the concept.
+> [This article](https://itnext.io/where-does-the-unknown-taffic-in-istio-come-from-4a9a7e4454c3. describes well the concept.
