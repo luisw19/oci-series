@@ -20,7 +20,7 @@ oci setup config
 ```
 
 > Note that during the configuration you'll have to use the OCI web console to [obtain your user and tenancy OCID](https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#Other)
-> and also [add the generated public to your OCI user](https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#How2..
+> and also [add the generated public to your OCI user](https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#How2).
 
 2. [Click here for the steps](https://docs.cloud.oracle.com/iaas/Content/ContEng/Concepts/contengpolicyconfig.htm#PolicyPrerequisitesService) to grant the **Container Engine** access to all resources in the tenancy.
 

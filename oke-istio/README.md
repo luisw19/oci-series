@@ -616,4 +616,4 @@ Then look for the **match** clause (e.g. /match) and then replace it with the de
 match: (context.protocol == "http" || context.protocol == "grpc") && match(request.useragent | "", "kube-probe*") == false
 ```
 
-> [This article](https://itnext.io/where-does-the-unknown-taffic-in-istio-come-from-4a9a7e4454c3. describes well the concept.
+> [This article](https://itnext.io/where-does-the-unknown-taffic-in-istio-come-from-4a9a7e4454c3) describes well the concept.
