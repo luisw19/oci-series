@@ -165,19 +165,7 @@ curl -I -HHost:httpbin.sample \
 http://httpbin.sample:$INGRESS_PORT/headers
 ```
 
-If successful result should be similar to:
-
-```bash
-HTTP/1.1 200 OK
-Server: nginx/1.15.9
-Date: Tue, 19 Mar 2019 15:37:08 GMT
-Content-Type: application/json
-Content-Length: 270
-Connection: keep-alive
-Vary: Accept-Encoding
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Credentials: true
-```
+If successful result should be a **HTTP/1.1 200 OK**
 
 Now using HTTPS:
 
@@ -187,6 +175,8 @@ curl -I --insecure \
 --resolve httpbin.sample:$SECURE_INGRESS_PORT:$INGRESS_HOST \
 https://httpbin.sample:$SECURE_INGRESS_PORT/headers
 ```
+
+Result should be a **HTTP/2 200**
 
 - To delete the sample run:
 

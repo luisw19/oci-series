@@ -178,7 +178,7 @@ helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace 
 --set tracing.enabled=true \
 --set tracing.jaeger.ingress.enabled=true \
 --set kiali.enabled=true \
---set kiali.dashboard.jaegerURL='http://localhost:15.86' \
+--set kiali.dashboard.jaegerURL='http://localhost:16686' \
 --set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
 ```
 
@@ -549,10 +549,10 @@ Then accessing the following link in the browser: http://localhost:3000
 - For **Jaeger** run command:
 
 ```bash
-kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 15.86:15.86 &
+kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686 &
 ```
 
-Then accessing the following link in the browser: http://localhost:15.86
+Then accessing the following link in the browser: http://localhost:16686
 
 > Check [this page](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/) for more details.
 
@@ -562,7 +562,7 @@ Then accessing the following link in the browser: http://localhost:15.86
 kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=kiali -o jsonpath='{.items[0].metadata.name}') 20001:20001 &
 ```
 
-> Note that Kiali will try to access **Jaeger** in **http://localhost:15.86** so ensure port-forwarding is enable for it.
+> Note that Kiali will try to access **Jaeger** in **http://localhost:16686** so ensure port-forwarding is enable for it.
 
 Then accessing the following link in the browser: http://localhost:20001/kiali/
 
