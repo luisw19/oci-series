@@ -1,17 +1,17 @@
 
 # Istio installation in Oracle Container Engine for Kubernetes
 
-This recipe details how to install [Istio](https://istio.io/docs/concepts/what-is-istio/) in [OKE](https://cloud.oracle.com/containers/kubernetes-engine) with [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Jaeger](https://www.jaegertracing.io/) and [Kiali](https://www.kiali.io/). The recipe also shows how to enable TLS security using [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/).
+This recipe details how to install [Istio](https://istio.io/docs/concepts/what-is-istio/) in [OKE](https://cloud.oracle.com/containers/kubernetes-engine) with [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Jaeger](https://www.jaegertracing.io/) and [Kiali](https://www.kiali.io/). The recipe also shows how to enable TLS security using [Secret Discovery](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-sds/).
 
 > Note that the following Istio installation is based on [Helm](https://istio.io/docs/setup/kubernetes/install/helm/)
 > using Mac.
-> [Check this link](https://github.com/luisw19/oci-series/tree/master/oke-install) to provision a new Kubernetes Cluster in OCI if an instance is not already available.
+> [Check this link](https://luisw19.github.io/oci-series/oke-install/) to provision a new Kubernetes Cluster in OCI if an instance is not already available.
 > This installation has been tested with [Istio version 1.2.5](https://istio.io/about/notes/1.2.5/).
 
 **1)** Grant the *Kubernetes RBAC cluster-admin clusterrole* to a OCI user based on
 the user's *Oracle Cloud Identifier (OCID)*.
 
-  > To obtain the OICD open the OCI Console and from there
+  > To obtain the OCID open the OCI Console and from there
   > click on the menu option *Identity > Users*.
   > Then click on *show* under the username and take note of the OID.
 
@@ -143,11 +143,11 @@ kubectl create namespace istio-system
 **7)** Install the **istio-init** Helm chart to bootstrap all the Istio’s [Custom Resource Definitions (CRDs)](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions)
 
 ```bash
-helm install $ISTIO_HOME/install/kubernetes/helm/istio-init --name istio-init --namespace istio-system \
+helm install "$ISTIO_HOME/install/kubernetes/helm/istio-init" --name istio-init --namespace istio-system \
 --set certmanager.enabled=true
 ```
 
-Verify that all **59** CRDs were created:
+Verify that all **28** CRDs were created:
 
 ```bash
 kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
@@ -160,22 +160,20 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 - To install with Istio with the [Prometheus](https://istio.io/docs/tasks/telemetry/metrics/querying-metrics/), [Jaeger](https://istio.io/docs/tasks/telemetry/distributed-tracing/jaeger/), [Grafana](https://istio.io/docs/tasks/telemetry/using-istio-dashboard/) and [Kiali](https://istio.io/docs/tasks/telemetry/kiali/) add-ons install as following:
 
   ```bash
-  helm install $ISTIO_HOME/install/kubernetes/helm/istio --name istio --namespace istio-system \
+  helm install "$ISTIO_HOME/install/kubernetes/helm/istio" --name istio --namespace istio-system \
   --set sds.enabled=true \
   --set gateways.istio-ingressgateway.sds.enabled=true \
   --set pilot.traceSampling=100.0 \
-  --set pilot.resources.requests.cpu=1800m \
-  --set telemetry-gateway.grafanaEnabled=true \
-  --set telemetry-gateway.prometheusEnabled=true \
   --set grafana.enabled=true \
+  --set prometheus.enabled=true \
   --set tracing.enabled=true \
-  --set tracing.jaeger.ingress.enabled=true \
+  --set tracing.ingress.enabled=true \
   --set kiali.enabled=true \
   --set kiali.dashboard.jaegerURL='http://localhost:16686' \
   --set kiali.dashboard.grafanaURL='http://grafana.istio-system:3000'
   ```
 
-  > [Click here](https://istio.io/docs/reference/config/installation-options/) for details of more options available. Also note that *Istio 1.2.5* also comes with add-ons for [LightStep [𝑥]PM](https://istio.io/docs/tasks/telemetry/distributed-tracing/lightstep/) and [Zipkin](https://istio.io/docs/tasks/telemetry/distributed-tracing/zipkin/) however these are not used in this recipe.
+  > [Click here](https://istio.io/docs/reference/config/installation-options/) for details of more options available. Also note that *Istio 1.2.5* also comes with add-ons for [LightStep [𝑥]PM](https://istio.io/docs/tasks/telemetry/distributed-tracing/lightstep/), [Zipkin](https://istio.io/docs/tasks/telemetry/distributed-tracing/zipkin/) and [DataDog](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/datadog/) however these are not implemented in this recipe.
 
 - Verity all that **pods** are **running** run:
 
@@ -187,22 +185,22 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 
   ```bash
   NAME                                     READY   STATUS      RESTARTS   AGE
-  grafana-7869478fc5-khpfm                 1/1     Running     0          4m6s
-  istio-citadel-6c456d967c-6hjxm           1/1     Running     0          4m5s
-  istio-galley-86c6786858-zkrgw            1/1     Running     0          4m6s
-  istio-ingressgateway-79bd957659-h9q7p    2/2     Running     0          4m6s
-  istio-init-crd-10-kgzvc                  0/1     Completed   0          6m20s
-  istio-init-crd-11-nkl4b                  0/1     Completed   0          6m20s
-  istio-init-crd-12-wbsv5                  0/1     Completed   0          6m20s
-  istio-init-crd-certmanager-10-hdh54      0/1     Completed   0          6m20s
-  istio-init-crd-certmanager-11-svkr7      0/1     Completed   0          6m20s
-  istio-pilot-7d7889dc5d-l5xkk             2/2     Running     0          4m5s
-  istio-policy-658c7476f7-s9v9t            2/2     Running     1          4m6s
-  istio-sidecar-injector-bcf445789-rhk77   1/1     Running     0          4m5s
-  istio-telemetry-5785dc6dc5-qxnfr         2/2     Running     1          4m6s
-  istio-tracing-79db5954f-vcs94            1/1     Running     0          4m5s
-  kiali-7b5b867f8-5h5tz                    1/1     Running     0          4m6s
-  prometheus-5b48f5d49-5ggf4               1/1     Running     0          4m5s
+  grafana-7869478fc5-q95bf                 1/1     Running     0          2m30s
+  istio-citadel-6c456d967c-6qksq           1/1     Running     0          2m29s
+  istio-galley-86c6786858-xqb7n            1/1     Running     0          2m30s
+  istio-ingressgateway-79bd957659-kd6lp    2/2     Running     0          2m30s
+  istio-init-crd-10-2kz4l                  0/1     Completed   0          14m
+  istio-init-crd-11-fmp79                  0/1     Completed   0          14m
+  istio-init-crd-12-7p4d5                  0/1     Completed   0          14m
+  istio-init-crd-certmanager-10-jblj9      0/1     Completed   0          14m
+  istio-init-crd-certmanager-11-g4hhz      0/1     Completed   0          14m
+  istio-pilot-848dd458d4-65m85             2/2     Running     0          2m30s
+  istio-policy-658c7476f7-6fsjw            2/2     Running     2          2m30s
+  istio-sidecar-injector-bcf445789-rcl5h   1/1     Running     0          2m29s
+  istio-telemetry-5785dc6dc5-854ns         2/2     Running     2          2m30s
+  istio-tracing-79db5954f-g4fss            1/1     Running     0          2m29s
+  kiali-7b5b867f8-4g8rk                    1/1     Running     0          2m30s
+  prometheus-5b48f5d49-dv8lv               1/1     Running     0          2m29s
   ```
 
 - Also Verify that  services were created and that an **EXTERNAL-IP** has been allocated to **istio-ingressgateway**:
@@ -223,7 +221,7 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
   To delete all running CRDs execute:
 
   ```bash
-  for i in $ISTIO_HOME/install/kubernetes/helm/istio-init/files/*crd*yaml; do kubectl delete -f $i; done
+  kubectl delete -f "$ISTIO_HOME/install/kubernetes/helm/istio-init/files"
   ```
 
   > note that a **(NotFound)** error will be shown after running the command. This is because Certificate Manager wasn't enabled during the installation so it can be ignored.
@@ -266,14 +264,14 @@ kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l
 
 - Based on [this Istio sample](https://istio.io/docs/tasks/traffic-management/ingress/), deploy the [HTTPBIN](https://httpbin.org) **manifest** as following:
 
-```bash
-kubectl apply -n httpbin-istio -f https://raw.githubusercontent.com/istio/istio/release-1.2/samples/httpbin/httpbin.yaml
-```
+  ```bash
+  kubectl apply -n httpbin-istio -f https://raw.githubusercontent.com/istio/istio/release-1.2/samples/httpbin/httpbin.yaml
+  ```
 
 - Verity that the **side-car** was attached to the pod:
 
   ```bash
-  kubectl describe pod $(kubectl get pods -n httpbin-istio -o jsonpath='{.items[0].metadata.name}') -n httpbin-istio | grep istio-proxy
+  kubectl describe pod $(kubectl get pods -n httpbin-istio -o jsonpath='{.items[0].metadata.name}') -n httpbin-istio
   ```
 
   Then verify that the init container `istio-init` and the sidecar container `istio-proxy` were injected into the pod.
@@ -349,9 +347,9 @@ and [Virtual Service](https://istio.io/docs/concepts/traffic-management/#virtual
 
   In all cases the response should be a **HTTP/1.1 200 OK**
 
-**12)** [Istio Ingress TLS configuration](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/#configure-a-tls-ingress-gateway-for-multiple-hosts) for adding HTTPS support (based on [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/))
+**12)** Istio Ingress TLS configuration for adding HTTPS support (based on [Secret Discovery](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-sds/))
 
-> Note that Istio provides 2 approaches to add TLS support in the Ingress Gateways. The first one is based on a [File Mount](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/mount/) and the second one using [Secret Discovery](https://preliminary.istio.io/docs/tasks/traffic-management/secure-ingress/sds/). Whereas both are approaches are fairly straight forward, when having to support multiple hosts (e.g. several subdomains) the **Secret Discovery** approach is simpler to implement as it won't require to re-deploy the istio-ingressgateway.
+> Note that Istio provides 2 approaches to add TLS support in the Ingress Gateways. The first one is based on a [File Mount](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-mount/) and the second one using [Secret Discovery](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-sds/). Whereas both are approaches are fairly straight forward, when having to support multiple hosts (e.g. several subdomains) the **Secret Discovery** approach is simpler to implement as it won't require to re-deploy the istio-ingressgateway.
 
 <!-- - Enable SDS at ingress gateway level and deploy the ingress gateway agent
 
@@ -372,7 +370,7 @@ kubectl apply -f istio-ingressgateway.yaml
 Note that the above step was commented as it was avoided by just adding --set gateways.istio-ingressgateway.sds.enabled=true as part of the istio installation.
 -->
 
-- Using the [openssl](https://www.openssl.org/) utility [generate a TLS certificate](https://istio.io/docs/tasks/traffic-management/secure-ingress/sds/) as following:
+- Using the [openssl](https://www.openssl.org/) utility [generate a TLS certificate](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-sds/#generate-client-and-server-certificates-and-keys) as following:
 
   ```bash
   openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
@@ -457,6 +455,7 @@ When prompted enter further details as desired, for example:
   curl -v -HHost:httpbin.adomain.com \
   --resolve httpbin.adomain.com:$SECURE_INGRESS_PORT:$INGRESS_HOST \
   --cacert httpbin.adomain.com.crt \
+  --insecure \
   https://httpbin.adomain.com:$SECURE_INGRESS_PORT/httpbin/status/418
   ```
 
